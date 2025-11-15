@@ -1,4 +1,6 @@
-import { initTRPC } from "@trpc/server";
+import { auth } from "@/lib/auth";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { headers } from "next/headers";
 import { cache } from "react";
 export const createTRPCContext = cache(async () => {
   /**
@@ -22,4 +24,23 @@ export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 // add protected access routes
-// export const protectedProcedure = baseProcedure.use(() => false/true)
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Unauthorized",
+    });
+  }
+
+  return next({
+    // extend the context to include the session data by default
+    ctx: {
+      ...ctx,
+      auth: session,
+    },
+  });
+});
