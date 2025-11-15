@@ -5,11 +5,7 @@ import React from "react";
 const Page = async () => {
   await requireUnauth();
 
-  return (
-    <div className="p-4">
-      <LoginForm />{" "}
-    </div>
-  );
+  return <LoginForm />;
 };
 
 export default Page;
