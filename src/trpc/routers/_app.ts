@@ -1,11 +1,17 @@
 import { inngest } from "@/inngest/client";
-import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  createTRPCRouter,
+  premiumProcedure,
+  protectedProcedure,
+} from "../init";
 import prisma from "@/lib/db";
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 
 export const appRouter = createTRPCRouter({
-  testAi: protectedProcedure.mutation(async () => {
+  // testAi: protectedProcedure.mutation(async () => {// require login
+  testAi: premiumProcedure.mutation(async () => {
+    // require subscription
     try {
       // Check if API key is configured
       if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
