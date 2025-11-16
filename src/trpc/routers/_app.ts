@@ -15,11 +15,10 @@ export const appRouter = createTRPCRouter({
         );
       }
 
-      const { text } = await generateText({
-        model: google("gemini-2.5-flash"),
-        prompt: "Write a 2 paragraph summary of special relativity",
+      inngest.send({
+        name: "execute/ai",
       });
-      return text;
+      return { success: true, message: "AI Job queued" };
     } catch (error) {
       console.error("Error in testAi mutation:", error);
       throw error;
