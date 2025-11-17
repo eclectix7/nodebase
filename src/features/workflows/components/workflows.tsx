@@ -12,7 +12,7 @@ import {
 } from "@/components/entity-components";
 import {
   useCreateWorkflow,
-  useRmoveWorkflow,
+  useRemoveWorkflow,
   useSuspenseWorkflows,
 } from "@/features/workflows/hooks/use-workflows";
 import { useWorkflowsParams } from "@/features/workflows/hooks/use-workflows-params";
@@ -146,7 +146,7 @@ export const WorkflowsEmpty = () => {
 };
 
 export const WorkflowItem = ({ data }: { data: WorkflowModel }) => {
-  const removeWorkflow = useRmoveWorkflow();
+  const removeWorkflow = useRemoveWorkflow();
 
   const handleRemove = () => {
     removeWorkflow.mutate({ id: data.id });
