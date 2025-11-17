@@ -9,6 +9,8 @@ import z from "zod";
 import { userAgent } from "next/server";
 import { Input } from "@/components/ui/input";
 import { PAGINATION } from "@/config/constants";
+import { NodeType } from "@/generated/prisma/enums";
+import type { Node, Edge } from "@xyflow/react";
 
 export const workflowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -16,6 +18,14 @@ export const workflowsRouter = createTRPCRouter({
       data: {
         name: generateSlug(3), // TODO add name
         userId: ctx.auth.user.id,
+        nodes: {
+          // initial starting node data
+          create: {
+            type: NodeType.INITIAL,
+            position: { x: 0, y: 0 },
+            name: NodeType.INITIAL,
+          },
+        },
       },
     });
   }), // create
@@ -40,10 +50,35 @@ export const workflowsRouter = createTRPCRouter({
     }), // updateName
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
-      return prisma.workflow.findUniqueOrThrow({
+    .query(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
         where: { id: input.id, userId: ctx.auth.user.id },
+        include: { nodes: true, connections: true },
       });
+
+      // transform server data/nodes to reactflow nodes
+      const nodes: Node[] = workflow.nodes.map((node) => ({
+        id: node.id,
+        type: node.type,
+        position: node.position as { x: number; y: number },
+        data: (node.data as Record<string, unknown>) || {},
+      }));
+
+      // transform server data/edges to reactflow edges
+      const edges: Edge[] = workflow.connections.map((conn) => ({
+        id: conn.id,
+        source: conn.fromNodeId,
+        target: conn.toNodeId,
+        sourceHandle: conn.fromOutput,
+        targetHandle: conn.toInput,
+      }));
+
+      return {
+        id: workflow.id,
+        name: workflow.name,
+        nodes,
+        edges,
+      };
     }), // getOne
   getMany: protectedProcedure
     .input(
