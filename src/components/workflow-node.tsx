@@ -15,6 +15,11 @@ interface WorkflowNodeProps {
   description?: string;
 }
 
+/**
+ * Wrapper to include a node settings/delete menu above the node
+ * and/or a name & description below it.
+ * @returns
+ */
 export function WorkflowNode({
   children,
   showToolbar = true,
