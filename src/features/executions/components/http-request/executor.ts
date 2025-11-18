@@ -3,6 +3,7 @@ import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 
 type HttpRequestData = {
+  variableName?: string; // optional bc dne on creation
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
@@ -24,6 +25,13 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
     );
   }
 
+  if (!data.variableName) {
+    // TODO publish error state
+    throw new NonRetriableError(
+      "hre31 HTTP Request node: no variable name configured"
+    );
+  }
+
   const result = await step.run("http-request", async () => {
     const endpoint = data.endpoint!;
     const method = data.method || "GET";
@@ -32,27 +40,43 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       method,
     };
 
+    // Add body for POST, PUT, PATCH methods
     if (["POST", "PUT", "PATCH"].includes(method)) {
       if (data.body) {
         // TODO add template extraction
         options.body = data.body;
+        options.headers = {
+          "Content-Type": "application/json",
+        };
       }
+    }
 
-      const response = await ky(endpoint, options);
-      const contentType = response.headers.get("content-type");
-      const responseData = contentType?.includes("application/json")
-        ? await response.json()
-        : await response.text();
+    // Execute HTTP request for all methods (GET, POST, PUT, PATCH, DELETE)
+    const response = await ky(endpoint, options);
+    const contentType = response.headers.get("content-type");
+    const responseData = contentType?.includes("application/json")
+      ? await response.json()
+      : await response.text();
 
+    const responsePayload = {
+      httpResponse: {
+        status: response.status,
+        statusText: response.statusText,
+        data: responseData,
+      },
+    };
+
+    if (data.variableName) {
       return {
         ...context,
-        httpResponse: {
-          status: response.status,
-          statusText: response.statusText,
-          data: responseData,
-        },
+        [data.variableName]: responsePayload,
       };
     }
+    // backwards compatibility
+    return {
+      ...context,
+      ...responsePayload,
+    };
   });
 
   // no actual work, but we have to return Promise<WorkflowContext> with the data to maintain interface
