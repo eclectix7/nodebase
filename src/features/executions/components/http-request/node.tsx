@@ -5,12 +5,12 @@ import {
   HttpRequestFormValues,
   HttpRequestDialog,
 } from "@/features/executions/components/http-request/dialog";
-import { StringFilter } from "@/generated/prisma/commonInputTypes";
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { GlobeIcon } from "lucide-react";
 import { memo, useState } from "react";
 
 type HttpRequestNodeData = {
+  variableName?: string; // optional bc dne on creation
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
