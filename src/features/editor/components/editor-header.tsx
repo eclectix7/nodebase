@@ -30,6 +30,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     if (!editor) {
       return;
     }
+    // TODO Highlight NOT SAVED when dirty
 
     const nodes = editor.getNodes();
     const edges = editor.getEdges();
