@@ -12,7 +12,7 @@ export const manualTriggerExecutor: NodeExecutor<ManualTriggerData> = async ({
   // no actual work, but we have to return Promise<WorkflowContext> with the data to maintain interface
   const result = await step.run("manual-trigger", async () => context);
 
-  // TODO publich success state for manual trigger
+  // TODO publish success state for manual trigger
 
   return result;
 };
