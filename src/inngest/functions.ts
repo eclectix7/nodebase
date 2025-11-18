@@ -1,88 +1,59 @@
-import prisma from "@/lib/db";
+import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
-import { generateText } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
+import prisma from "@/lib/db";
+import { topologicalSort } from "@/inngest/utils";
+import { NodeType } from "@/generated/prisma/enums";
+import { getExecutor } from "@/features/executions/lib/executor-registry";
 
-const google = createGoogleGenerativeAI();
-const openai = createOpenAI();
-const anthropic = createAnthropic();
-
-export const execute = inngest.createFunction(
-  { id: "execute" },
-  { event: "execute/ai" },
+export const executeWorkflow = inngest.createFunction(
+  { id: "execute-workflow" },
+  { event: "workflows/execute.workflow" },
   async ({ event, step }) => {
-    await step.sleep("pretend/sleep/", "5s");
-    console.warn("test warning");
-    console.error("testError/");
+    // console.log("executeWorkflow/workflows/execute.workflow/", { event, step });
+    const workflowId = event.data.workflowId;
 
-    const { steps: geminiSteps } = await step.ai.wrap(
-      "gemini-generate-text",
-      generateText,
-      {
-        model: google("gemini-2.5-flash"),
-        system: "You are a helpful assistant",
-        prompt: "In five words, what is a derivative?",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
-        },
-      }
-    );
-    const { steps: openaiSteps } = await step.ai.wrap(
-      "openai-generate-text",
-      generateText,
-      {
-        model: openai("gpt-4.1"),
-        system: "You are a helpful assistant",
-        prompt: "In five words, what is a derivative?",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
-        },
-      }
-    );
-    const { steps: anthropicSteps } = await step.ai.wrap(
-      "anthropic-generate-text",
-      generateText,
-      {
-        model: anthropic("claude-sonnet-4-5"),
-        system: "You are a helpful assistant",
-        prompt: "In five words, what is a derivative?",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
-        },
-      }
-    );
+    if (!workflowId) {
+      // nothing to try or retry
+      throw new NonRetriableError("Workflow ID is missing");
+    }
 
-    return {
-      geminiSteps,
-      openaiSteps,
-      anthropicSteps,
-    };
-  }
-);
-
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
-  async ({ event, step }) => {
-    // imaginary bg work1
-    await step.sleep("task1", "5s");
-    // imaginary bg work2
-    await step.sleep("task2", "5s");
-
-    await step.run("task3", () => {
-      return prisma.workflow.create({
-        data: {
-          name: "workflow-from-inngest",
+    const sortedNodes = await step.run("prepare-workflow", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id: workflowId },
+        include: {
+          nodes: true,
+          connections: true,
         },
+      }); // wf
+
+      // console.log("executeWorkflow/29/", { nodes: workflow.nodes });
+
+      // left out jic Db is not available
+      // if (!workflow) {
+      //   // nothing to try or retry
+      //   throw new NonRetriableError("Workflow not found");
+      // }
+
+      return topologicalSort(workflow.nodes, workflow.connections);
+    }); // nodes
+
+    // initialize the context with any initial data from the trigger
+
+    let context = event.data.initialData || {};
+
+    // execute each node
+    for (const node of sortedNodes) {
+      const executor = getExecutor(node.type as NodeType);
+      // console.log("for/sortedNodes/", { node });
+
+      context = await executor({
+        data: node.data as Record<string, unknown>,
+        nodeId: node.id,
+        context,
+        step,
       });
-    });
-  }
-);
+    } // for
+
+    return { workflowId, results: context };
+  } // async(workflows/execute.workflow)
+); // createFunction/executeWorkflow
