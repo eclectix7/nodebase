@@ -34,6 +34,13 @@ export async function POST(request: NextRequest) {
         googleForm: formData,
       },
     });
+    // send success response
+    return NextResponse.json(
+      {
+        success: true,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Google form webhook error:", error);
     return NextResponse.json(
