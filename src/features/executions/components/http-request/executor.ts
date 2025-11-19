@@ -2,6 +2,7 @@ import Handlebars from "handlebars";
 import { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 Handlebars.registerHelper("json", (context) => {
   const str = JSON.stringify(context);
@@ -22,26 +23,51 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   nodeId,
   context,
   step,
+  publish,
 }) => {
-  // TODO publish loading state
   // console.log("httpRequestExecutor/", { data, nodeId, context, step });
+  // emit loading event
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: "loading",
+    })
+  );
 
   if (!data.endpoint) {
-    // TODO publish error state
+    // emit error event
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
     throw new NonRetriableError(
       "hre22 HTTP Request node: no endpoint configured"
     );
   }
 
   if (!data.variableName) {
-    // TODO publish error state
+    // emit error event
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
     throw new NonRetriableError(
       "hre31 HTTP Request node: no variable name configured"
     );
   }
 
   if (!data.method) {
-    // TODO publish error state
+    // emit error event
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
     throw new NonRetriableError(
       "hre46 HTTP Request node: no method name configured"
     );
@@ -97,7 +123,13 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   // no actual work, but we have to return Promise<WorkflowContext> with the data to maintain interface
   // const result = await step.run("http-request", async () => context);
 
-  // TODO publich success state for manual trigger
+  // emit success event
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: "success",
+    })
+  );
 
   return result;
 };

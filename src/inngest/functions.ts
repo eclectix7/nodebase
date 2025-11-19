@@ -4,11 +4,12 @@ import prisma from "@/lib/db";
 import { topologicalSort } from "@/inngest/utils";
 import { NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executor-registry";
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
-  { event: "workflows/execute.workflow" },
-  async ({ event, step }) => {
+  { event: "workflows/execute.workflow", channels: [httpRequestChannel()] },
+  async ({ event, step, publish }) => {
     // console.log("executeWorkflow/workflows/execute.workflow/", { event, step });
     const workflowId = event.data.workflowId;
 
@@ -51,6 +52,7 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,
         context,
         step,
+        publish,
       });
     } // for
 
