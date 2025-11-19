@@ -72,64 +72,74 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       "hre46 HTTP Request node: no method name configured"
     );
   }
+  try {
+    const result = await step.run("http-request", async () => {
+      // Problems pt2 ~1:38:00
+      // parse the endpoint for handlebars templates that match the previous calls' json paths
+      const endpoint = Handlebars.compile(data.endpoint)(context);
+      // console.log("endpoint/", { endpoint });
+      const method = data.method;
 
-  const result = await step.run("http-request", async () => {
-    // Problems pt2 ~1:38:00
-    // parse the endpoint for handlebars templates that match the previous calls' json paths
-    const endpoint = Handlebars.compile(data.endpoint)(context);
-    // console.log("endpoint/", { endpoint });
-    const method = data.method;
+      const options: KyOptions = {
+        method,
+      };
 
-    const options: KyOptions = {
-      method,
-    };
-
-    // Add body for POST, PUT, PATCH methods
-    if (["POST", "PUT", "PATCH"].includes(method)) {
-      // console.log("body/pre/", { body: data.body });
-      // parse the node for handlebars templates that match the previous calls' json path
-      if (data.body) {
-        const resolved = Handlebars.compile(data.body || "{}")(context);
-        console.log("body/", { pre: data.body, resolved });
-        // options.body = data.body;
-        options.body = resolved;
-        options.headers = {
-          "Content-Type": "application/json",
-        };
+      // Add body for POST, PUT, PATCH methods
+      if (["POST", "PUT", "PATCH"].includes(method)) {
+        // console.log("body/pre/", { body: data.body });
+        // parse the node for handlebars templates that match the previous calls' json path
+        if (data.body) {
+          const resolved = Handlebars.compile(data.body || "{}")(context);
+          console.log("body/", { pre: data.body, resolved });
+          // options.body = data.body;
+          options.body = resolved;
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+        }
       }
-    }
 
-    // Execute HTTP request for all methods (GET, POST, PUT, PATCH, DELETE)
-    const response = await ky(endpoint, options);
-    const contentType = response.headers.get("content-type");
-    const responseData = contentType?.includes("application/json")
-      ? await response.json()
-      : await response.text();
+      // Execute HTTP request for all methods (GET, POST, PUT, PATCH, DELETE)
+      const response = await ky(endpoint, options);
+      const contentType = response.headers.get("content-type");
+      const responseData = contentType?.includes("application/json")
+        ? await response.json()
+        : await response.text();
 
-    const responsePayload = {
-      httpResponse: {
-        status: response.status,
-        statusText: response.statusText,
-        data: responseData,
-      },
-    };
+      const responsePayload = {
+        httpResponse: {
+          status: response.status,
+          statusText: response.statusText,
+          data: responseData,
+        },
+      };
 
-    return {
-      ...context,
-      [data.variableName]: responsePayload,
-    };
-  });
+      return {
+        ...context,
+        [data.variableName]: responsePayload,
+      };
+    });
 
-  // no actual work, but we have to return Promise<WorkflowContext> with the data to maintain interface
-  // const result = await step.run("http-request", async () => context);
+    // no actual work, but we have to return Promise<WorkflowContext> with the data to maintain interface
+    // const result = await step.run("http-request", async () => context);
 
-  // emit success event
-  await publish(
-    httpRequestChannel().status({
-      nodeId,
-      status: "success",
-    })
-  );
+    // emit success event
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "success",
+      })
+    );
 
-  return result;
-};
+    return result;
+  } catch (error) {
+    // emit error event
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
+    throw error;
+  }
+}; // httpRequestExecutor

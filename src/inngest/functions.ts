@@ -5,10 +5,17 @@ import { topologicalSort } from "@/inngest/utils";
 import { NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executor-registry";
 import { httpRequestChannel } from "@/inngest/channels/http-request";
+import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow" },
-  { event: "workflows/execute.workflow", channels: [httpRequestChannel()] },
+  {
+    id: "execute-workflow",
+    retries: 0, // TODO for testing, remove
+  },
+  {
+    event: "workflows/execute.workflow",
+    channels: [httpRequestChannel(), manualTriggerChannel()],
+  },
   async ({ event, step, publish }) => {
     // console.log("executeWorkflow/workflows/execute.workflow/", { event, step });
     const workflowId = event.data.workflowId;
