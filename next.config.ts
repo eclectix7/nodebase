@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  allowedDevOrigins: ["https://librada-nondefining-earline.ngrok-free.dev/*"],
   /* config options here */
   async redirects() {
     return [
@@ -47,3 +48,7 @@ export default withSentryConfig(nextConfig, {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });
+
+module.exports = {
+  allowedDevOrigins: ["librada-nondefining-earline.ngrok-free.dev/"],
+};
