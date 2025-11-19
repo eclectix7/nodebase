@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
       timestamp: body.created,
       livemode: body.livemode,
       raw: body.data?.object,
-      amount: body?.data?.amount,
+      amount: body?.data?.object?.amount,
+      currency: body?.data?.object?.currency,
     };
 
     // trigger an Inngest job

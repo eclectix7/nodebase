@@ -67,11 +67,11 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: Props) => {
           <div className="rounded-lg bg-muted p-4 space-y-2">
             <h4 className="font-medium text-sm">Setup Instructions</h4>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Open your Strip Dashboard</li>
+              <li>Open your Stripe Dashboard</li>
               <li>Go to developers &rArr; Webhooks</li>
               <li>Click "Add endpoint"</li>
               <li>Paste the webhook URL above</li>
-              <li>Select events to list for (eg payment_intent.succeeded)</li>
+              <li>Select events to listen for (eg payment_intent.succeeded)</li>
               <li>Save & copy the signing secret</li>
             </ol>
           </div>
