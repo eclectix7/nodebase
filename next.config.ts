@@ -48,7 +48,3 @@ export default withSentryConfig(nextConfig, {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });
-
-module.exports = {
-  allowedDevOrigins: ["librada-nondefining-earline.ngrok-free.dev/"],
-};
