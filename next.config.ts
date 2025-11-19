@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  allowedDevOrigins: ["https://librada-nondefining-earline.ngrok-free.dev/*"],
   /* config options here */
   async redirects() {
     return [
