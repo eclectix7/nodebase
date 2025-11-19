@@ -36,6 +36,12 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Runs the flow when a Google form is submitted.",
     icon: "/logos/googleform.svg",
   },
+  {
+    type: NodeType.STRIPE_TRIGGER,
+    label: "Stripe trigger",
+    description: "Runs the flow from a Stripe event.",
+    icon: "/logos/stripe.svg",
+  },
 ];
 const executionNodes: NodeTypeOption[] = [
   {
@@ -121,7 +127,7 @@ export function NodeSelector({
             return (
               <div
                 key={nodeType.type}
-                className="w-full justify-start h-auto-py-5 px-4 rounded-none border-transparent hover:border-l-primary cursor-pointer"
+                className="w-full justify-start h-auto p-4 rounded-none border-transparent hover:border-l-primary cursor-pointer"
                 onClick={() => handleNodeSelect(nodeType)}
               >
                 <div className="flex items-center gap-6 w-full overflow-hidden">
@@ -155,7 +161,7 @@ export function NodeSelector({
             return (
               <div
                 key={nodeType.type}
-                className="w-full justify-start h-auto-py-5 px-4 rounded-none border-transparent hover:border-l-primary"
+                className="w-full justify-start h-auto p-4 rounded-none border-transparent hover:border-l-primary"
                 onClick={() => handleNodeSelect(nodeType)}
               >
                 <div className="flex items-center gap-6 w-full overflow-hidden">

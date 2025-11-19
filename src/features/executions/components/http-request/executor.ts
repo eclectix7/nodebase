@@ -12,9 +12,9 @@ Handlebars.registerHelper("json", (context) => {
 });
 
 type HttpRequestData = {
-  variableName: string; // optional bc dne on creation
-  endpoint: string;
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  variableName?: string; // optional bc dne on creation
+  endpoint?: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
 };
 
@@ -33,47 +33,47 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       status: "loading",
     })
   );
-
-  if (!data.endpoint) {
-    // emit error event
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError(
-      "hre22 HTTP Request node: no endpoint configured"
-    );
-  }
-
-  if (!data.variableName) {
-    // emit error event
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError(
-      "hre31 HTTP Request node: no variable name configured"
-    );
-  }
-
-  if (!data.method) {
-    // emit error event
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      })
-    );
-    throw new NonRetriableError(
-      "hre46 HTTP Request node: no method name configured"
-    );
-  }
   try {
     const result = await step.run("http-request", async () => {
+      if (!data.endpoint) {
+        // emit error event
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          })
+        );
+        throw new NonRetriableError(
+          "hre47 HTTP Request node: no endpoint configured"
+        );
+      }
+
+      if (!data.variableName) {
+        // emit error event
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          })
+        );
+        throw new NonRetriableError(
+          "hre60 HTTP Request node: no variable name configured"
+        );
+      }
+
+      if (!data.method) {
+        // emit error event
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          })
+        );
+        throw new NonRetriableError(
+          "hre73 HTTP Request node: no method name configured"
+        );
+      }
+
       // Problems pt2 ~1:38:00
       // parse the endpoint for handlebars templates that match the previous calls' json paths
       const endpoint = Handlebars.compile(data.endpoint)(context);
