@@ -1,5 +1,6 @@
 import { geminiExecutor } from "@/features/executions/components/gemini/executor";
 import { httpRequestExecutor } from "@/features/executions/components/http-request/executor";
+import { openaiExecutor } from "@/features/executions/components/openai/executor";
 import { NodeExecutor } from "@/features/executions/types";
 import { googleFormTriggerExecutor } from "@/features/triggers/components/google-form-trigger/executor";
 import { manualTriggerExecutor } from "@/features/triggers/components/manual-trigger/executor";
@@ -14,7 +15,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
   [NodeType.GEMINI]: geminiExecutor,
   [NodeType.ANTHROPIC]: geminiExecutor, // TODO fix
-  [NodeType.OPENAI]: geminiExecutor, // TODO fix
+  [NodeType.OPENAI]: openaiExecutor, // TODO fix
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {

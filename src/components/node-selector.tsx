@@ -56,6 +56,18 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes an AI call to generate texts",
     icon: "/logos/gemini.svg",
   },
+  {
+    type: NodeType.OPENAI,
+    label: "OpenAI integration",
+    description: "Makes an AI call to generate texts",
+    icon: "/logos/openai.svg",
+  },
+  // {
+  //   type: NodeType.ANTHROPIC,
+  //   label: "Anthropic AI integration",
+  //   description: "Makes an AI call to generate texts",
+  //   icon: "/logos/anthropic.svg",
+  // },
 ];
 
 interface NodeSelectorProps {
