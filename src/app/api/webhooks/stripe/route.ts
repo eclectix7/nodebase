@@ -20,6 +20,10 @@ export async function POST(request: NextRequest) {
     }
     const body = await request.json();
 
+    /**
+     * stripe listen --forward-to {URL} copied from node dialog
+     */
+
     // "one" stripe event triggers multiple, so we need to restrict to the one we actually want.
     // E.g. "payment_intent.succeeded" emits 3 other events BEFORE being sent
     // CLI trigger command: stripe trigger payment_intent.succeeded

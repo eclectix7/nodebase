@@ -14,7 +14,7 @@ interface BaseTriggerNodeProps extends NodeProps {
   icon: LucideIcon | string;
   name: string;
   description: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   status: NodeStatus; // used w/pub-sub tracking
   onSettings?: () => void;
   onDoubleClick?: () => void;

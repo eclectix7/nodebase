@@ -80,6 +80,8 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       // console.log("endpoint/", { endpoint });
       const method = data.method;
 
+      console.log("httpRequest/", { method, endpoint });
+
       const options: KyOptions = {
         method,
       };
