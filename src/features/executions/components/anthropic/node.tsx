@@ -15,6 +15,7 @@ import { ANTHROPIC_CHANNEL_NAME } from "@/inngest/channels/anthropic";
 
 type AnthropicNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: AnthropicModelName;
   systemPrompt?: string;
   userPrompt?: string;
@@ -22,7 +23,6 @@ type AnthropicNodeData = {
 
 type AnthropicNodeType = Node<AnthropicNodeData>;
 
-// TODO Settings not opening on select as expected when done @10:27:00
 export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
   const { setNodes } = useReactFlow();
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -15,6 +15,7 @@ import { memo, useState } from "react";
 
 type OpenAiNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: OpenAiModelName;
   systemPrompt?: string;
   userPrompt?: string;
@@ -22,7 +23,6 @@ type OpenAiNodeData = {
 
 type OpenAiNodeType = Node<OpenAiNodeData>;
 
-// TODO Settings not opening on select as expected when done @10:27:00
 export const OpenAiNode = memo((props: NodeProps<OpenAiNodeType>) => {
   const { setNodes } = useReactFlow();
   const [dialogOpen, setDialogOpen] = useState(false);

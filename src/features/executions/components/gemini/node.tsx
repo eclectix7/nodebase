@@ -15,6 +15,7 @@ import { memo, useState } from "react";
 
 type GeminiNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: GeminiModelName;
   systemPrompt?: string;
   userPrompt?: string;
@@ -22,7 +23,6 @@ type GeminiNodeData = {
 
 type GeminiNodeType = Node<GeminiNodeData>;
 
-// TODO Settings not opening on select as expected when done @10:27:00
 export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   const { setNodes } = useReactFlow();
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -292,7 +292,7 @@ export const EntityItem = ({
           className
         )}
       >
-        <CardContent className="flex flex-row items-center justify-center p-0">
+        <CardContent className="flex flex-row items-center justify-between p-0">
           <div className="flex items-center gap-3">
             {image}
             <div>
