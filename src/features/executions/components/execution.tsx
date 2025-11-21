@@ -28,13 +28,15 @@ import React, { useState } from "react";
 const getStatusIcon = (status: ExecutionStatus) => {
   switch (status) {
     case ExecutionStatus.SUCCESS:
-      return <CheckCircleIcon className="size-5 text-green-600" />;
+      return <CheckCircleIcon className="-mt-1 size-5 text-green-600" />;
     case ExecutionStatus.FAILED:
-      return <XCircleIcon className="size-5 text-red-600" />;
+      return <XCircleIcon className="-mt-1 size-5 text-red-600" />;
     case ExecutionStatus.RUNNING:
-      return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
+      return (
+        <Loader2Icon className="-mt-1 size-5 text-blue-600 animate-spin" />
+      );
     default:
-      return <ClockIcon className="size-5 text-muted-foreground" />;
+      return <ClockIcon className="-mt-1 size-5 text-muted-foreground" />;
   }
 };
 
@@ -59,7 +61,12 @@ const ExecutionView = ({ executionId }: { executionId: string }) => {
       <CardHeader>
         <div className="flex items-center gap-3">
           <div>
-            <CardTitle>{formatStatus(execution.status)}</CardTitle>
+            <CardTitle>
+              <div className="flex gap-2">
+                {getStatusIcon(execution.status)}{" "}
+                {formatStatus(execution.status)}
+              </div>
+            </CardTitle>
             <CardDescription>
               Execution for {execution.workflow.name}
             </CardDescription>

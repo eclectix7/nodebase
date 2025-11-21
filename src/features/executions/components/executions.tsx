@@ -11,17 +11,14 @@ import {
 } from "@/components/entity-components";
 import { useSuspenseExecutions } from "@/features/executions/hooks/use-executions";
 import { useExecutionsParams } from "@/features/executions/hooks/use-executions-params";
-import type { ExecutionModel } from "@/generated/prisma/models"; // deviated ~8:13:00
 import {
   CheckCircleIcon,
   ClockIcon,
-  KeyIcon,
   Loader2Icon,
   XCircleIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ExecutionStatus } from "@/generated/prisma/enums";
-import Image from "next/image";
 import { Execution } from "@/generated/prisma/client";
 
 export const ExecutionsList = () => {
@@ -91,15 +88,12 @@ const getStatusIcon = (status: ExecutionStatus) => {
   switch (status) {
     case ExecutionStatus.SUCCESS:
       return <CheckCircleIcon className="size-5 text-green-600" />;
-      break;
     case ExecutionStatus.FAILED:
       return <XCircleIcon className="size-5 text-red-600" />;
-      break;
     case ExecutionStatus.RUNNING:
       return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
-      break;
     default:
-      <ClockIcon className="size-5 text-muted-foreground" />;
+      return <ClockIcon className="size-5 text-muted-foreground" />;
   }
 };
 
