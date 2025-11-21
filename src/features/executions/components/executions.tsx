@@ -87,7 +87,7 @@ export const ExecutionsEmpty = () => {
   );
 };
 
-const getStatusIcon = (string: ExecutionStatus) => {
+const getStatusIcon = (status: ExecutionStatus) => {
   switch (status) {
     case ExecutionStatus.SUCCESS:
       return <CheckCircleIcon className="size-5 text-green-600" />;
