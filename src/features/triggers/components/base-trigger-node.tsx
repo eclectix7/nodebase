@@ -52,7 +52,6 @@ export const BaseTriggerNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        {/* TODO wrap with NodeStatusIndicator */}
         <NodeStatusIndicator
           status={status}
           variant="border"

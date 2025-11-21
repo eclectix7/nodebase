@@ -104,7 +104,7 @@ export const useUpdateCredential = () => {
  * @param type CredentialType
  * @returns
  */
-export const useCredentialsByTpe = (type: CredentialType) => {
+export const useCredentialsByType = (type: CredentialType) => {
   const trpc = useTRPC();
   return useQuery(trpc.credentials.getByType.queryOptions({ type }));
 };

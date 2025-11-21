@@ -29,6 +29,9 @@ import z from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
+import Image from "next/image";
 
 /**
  * OpenAi model user options
@@ -54,6 +57,7 @@ const formSchema = z.object({
       message:
         "Variable name must start with a letter of underscore and contain only letters, numbers, and underscores.",
     }),
+  credentialId: z.string().min(1, { message: "Credential is required" }),
   model: z.enum(OPENAI_MODELS),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, { message: "User prompt is required" }),
@@ -74,6 +78,9 @@ export const OpenAiDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
+  const { data: credentials, isLoading: isLoadingCredentials } =
+    useCredentialsByType(CredentialType.OPENAI);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -81,6 +88,7 @@ export const OpenAiDialog = ({
       model: defaultValues.model || OPENAI_MODELS[0],
       systemPrompt: defaultValues.systemPrompt || "",
       userPrompt: defaultValues.userPrompt || "",
+      credentialId: defaultValues.credentialId || "",
     },
   });
 
@@ -91,6 +99,7 @@ export const OpenAiDialog = ({
         model: defaultValues.model || OPENAI_MODELS[0],
         systemPrompt: defaultValues.systemPrompt || "",
         userPrompt: defaultValues.userPrompt || "",
+        credentialId: defaultValues.credentialId || "",
       });
     }
   }, [open, defaultValues, form]);
@@ -160,6 +169,42 @@ export const OpenAiDialog = ({
                   <FormDescription>
                     The OpenAi model to use in this node execution.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="credentialId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>OpenAI Credential</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoadingCredentials || !credentials?.length}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a credential" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {credentials?.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          <div className="flex items-center gap-2">
+                            <Image
+                              src="/logos/openai.svg"
+                              alt="OpenAI Key"
+                              width={16}
+                              height={16}
+                            />
+                            {credential.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
