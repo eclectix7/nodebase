@@ -10,6 +10,7 @@ import { googleFormTriggerChannel } from "@/inngest/channels/google-form-trigger
 import { stripeTriggerChannel } from "@/inngest/channels/stripe-trigger";
 import { geminiChannel } from "@/inngest/channels/gemini";
 import { anthropicChannel } from "@/inngest/channels/anthropic";
+import { discordChannel } from "@/inngest/channels/discord";
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -25,6 +26,7 @@ export const executeWorkflow = inngest.createFunction(
       stripeTriggerChannel(),
       geminiChannel(),
       anthropicChannel(),
+      discordChannel(),
     ],
   },
   async ({ event, step, publish }) => {

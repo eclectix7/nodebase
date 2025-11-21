@@ -1,4 +1,5 @@
 import { anthropicExecutor } from "@/features/executions/components/anthropic/executor";
+import { discordExecutor } from "@/features/executions/components/discord/executor";
 import { geminiExecutor } from "@/features/executions/components/gemini/executor";
 import { httpRequestExecutor } from "@/features/executions/components/http-request/executor";
 import { openaiExecutor } from "@/features/executions/components/openai/executor";
@@ -17,6 +18,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.GEMINI]: geminiExecutor,
   [NodeType.ANTHROPIC]: anthropicExecutor,
   [NodeType.OPENAI]: openaiExecutor,
+  [NodeType.DISCORD]: discordExecutor as NodeExecutor,
+  [NodeType.SLACK]: openaiExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
