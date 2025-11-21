@@ -65,7 +65,7 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
         status: "error",
       })
     );
-    throw new NonRetriableError("Anthropic node: Variable name is missing");
+    throw new NonRetriableError("Anthropic node: Credential is missing");
   }
 
   const systemPrompt = data.systemPrompt
