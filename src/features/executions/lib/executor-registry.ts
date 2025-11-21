@@ -3,6 +3,7 @@ import { discordExecutor } from "@/features/executions/components/discord/execut
 import { geminiExecutor } from "@/features/executions/components/gemini/executor";
 import { httpRequestExecutor } from "@/features/executions/components/http-request/executor";
 import { openaiExecutor } from "@/features/executions/components/openai/executor";
+import { slackExecutor } from "@/features/executions/components/slack/executor";
 import { NodeExecutor } from "@/features/executions/types";
 import { googleFormTriggerExecutor } from "@/features/triggers/components/google-form-trigger/executor";
 import { manualTriggerExecutor } from "@/features/triggers/components/manual-trigger/executor";
@@ -19,7 +20,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.ANTHROPIC]: anthropicExecutor,
   [NodeType.OPENAI]: openaiExecutor,
   [NodeType.DISCORD]: discordExecutor as NodeExecutor,
-  [NodeType.SLACK]: openaiExecutor,
+  [NodeType.SLACK]: slackExecutor as NodeExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
